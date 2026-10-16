@@ -24,8 +24,6 @@
 - [Using the app](#using-the-app)
 - [Provider presets](#provider-presets)
 - [Troubleshooting](#troubleshooting)
-- [Building from source](#building-from-source)
-- [Project structure](#project-structure)
 - [Data and security](#data-and-security)
 - [Credits](#credits)
 
@@ -73,12 +71,11 @@
 ### Requirements
 
 - Windows 10 or 11 (x64).
-- The release build is self-contained, so you don't need to install .NET to run it.
-- To build from source you need the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
+- The app is self-contained, so you don't need to install .NET to run it.
 
 ### Install
 
-1. Download `SMTPClientPro-2.0-win-x64.zip` from the releases, or [build it yourself](#building-from-source).
+1. Download `SMTPClientPro-2.0-win-x64.zip` from this repository.
 2. Extract it anywhere.
 3. Run `SMTPClientPro.exe`. Nothing needs to be installed.
 
@@ -127,8 +124,6 @@ Tokens are case-insensitive and may include spaces (`{{ FirstName }}`). The prev
 | Amazon SES (us-east-1) | `email-smtp.us-east-1.amazonaws.com` | 587 STARTTLS | Use SES SMTP credentials, not AWS access keys. Change the region in the host if needed. |
 | Local test server | `localhost` | 25, none | For [smtp4dev](https://github.com/rnwood/smtp4dev) or [Papercut](https://github.com/ChangemakerStudios/Papercut-SMTP). Mail is captured locally and never delivered. |
 
-To add or change presets, edit `Models/SmtpPreset.cs`.
-
 ## Troubleshooting
 
 | Symptom | Likely cause and fix |
@@ -140,51 +135,6 @@ To add or change presets, edit `Models/SmtpPreset.cs`.
 | **Saved password is empty** | Passwords are encrypted for the Windows user who saved them. They can't be decrypted by another user or on another PC, so enter the password again. |
 
 Leave **Show SMTP transcript** on and use **Save...** to keep the log when reporting a problem. Passwords are already redacted in it.
-
-## Building from source
-
-```powershell
-# Restore and run (Debug)
-dotnet run --project SMTPClientPro.csproj
-
-# Build only
-dotnet build SMTPClientPro.csproj -c Release
-
-# Self-contained single-file release
-dotnet publish SMTPClientPro.csproj -p:PublishProfile=win-x64
-```
-
-The publish profile (`Properties/PublishProfiles/win-x64.pubxml`) produces one compressed, self-contained `SMTPClientPro.exe` in `dist\SMTPClientPro-2.0-win-x64\`. You can also open `SMTPClientPro.sln` in Visual Studio 2022.
-
-**Dependencies:** [MailKit](https://github.com/jstedfast/MailKit) 4.18.1, which brings in MimeKit.
-
-## Project structure
-
-```
-SMTPClientPro/
-├── Program.cs                 Entry point (high-DPI, visual styles)
-├── AppInfo.cs                 Product name, version, credits, embedded icon/logo loaders
-├── AssemblyInfo.cs            Assembly metadata (version 2.0.0)
-├── MainForm.cs                UI behaviour: profiles, validation, send/test/export, logging
-├── MainForm.Layout.cs         Control declarations and layout
-├── LogoCard.cs                Branding card in the side panel
-├── Prompt.cs                  Small themed text-input dialog
-├── Models/
-│   ├── SmtpPreset.cs          Built-in provider presets
-│   └── SmtpProfile.cs         Saved profile, theme mode and settings file schema
-├── Services/
-│   ├── MailSender.cs          MailKit connect/auth/send, batch sending, friendly errors
-│   ├── MessageBuilder.cs      Address parsing, MIME composition, personalisation, HTML→text
-│   ├── ProfileStore.cs        JSON persistence and DPAPI password encryption
-│   └── TranscriptStream.cs    Turns MailKit's protocol log into readable transcript lines
-├── Theming/
-│   ├── Palette.cs             Light and dark colour palettes
-│   ├── ThemeManager.cs        Applies a palette to the control tree and tool strips
-│   └── NativeTheme.cs         Win32 interop for dark title bars and native control themes
-├── Assets/                    App icon and logo (embedded resources)
-├── Properties/                Resources, settings and the win-x64 publish profile
-└── screenshots/               Images used in this README
-```
 
 ## Data and security
 
